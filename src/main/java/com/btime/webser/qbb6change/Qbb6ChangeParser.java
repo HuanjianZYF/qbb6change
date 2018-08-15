@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
-import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 @Aspect
@@ -91,11 +90,20 @@ public class Qbb6ChangeParser {
 		}
 		
 		String qbb6Url = (String) objectClassProperty.getObject();
-		System.out.println("**********" + qbb6Url);
 		String url = doTransferQbb6(qbb6Url); //转换后的qbb6url
-		//拿到上一个结构，调用它的set方法
+		
+		//拿到上一个对象，调用它的set方法
 		ObjectClassProperty previous = objectClassProperty.getPrevious();
-
+		doSetterNewQbb6(previous, url);
+	}
+	
+	private void doSetterNewQbb6(ObjectClassProperty previous, String url) {
+		Class<?> owner = previous.getClazz();
+		try {
+			Method setter = owner.getDeclaredMethod(getSetterMethodName(previous.getProperty()));
+			setter.invoke(previous.getObject(), url);
+		} catch (Exception e) {
+		}
 	}
 	
 	/**
@@ -141,6 +149,7 @@ public class Qbb6ChangeParser {
 	private String doTransferQbb6(String qbb6Url) {
 		String result = qbb6Url;
 
+		result = "************zyyyyyyyyyyffffffffff";
 		return result;
 	}
 
