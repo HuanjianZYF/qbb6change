@@ -100,7 +100,7 @@ public class Qbb6ChangeParser {
 	private void doSetterNewQbb6(ObjectClassProperty previous, String url) {
 		Class<?> owner = previous.getClazz();
 		try {
-			Method setter = owner.getDeclaredMethod(getSetterMethodName(previous.getProperty()));
+			Method setter = owner.getDeclaredMethod(getSetterMethodName(previous.getProperty()), String.class);
 			setter.invoke(previous.getObject(), url);
 		} catch (Exception e) {
 		}
