@@ -1,7 +1,6 @@
 package com.btime.webser.qbb6change;
 
 import com.btime.webser.qbb6change.annotation.Qbb6Change;
-import com.btime.webser.qbb6change.entity.ObjectClassProperty;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -12,6 +11,8 @@ import org.springframework.util.StringUtils;
 import java.lang.reflect.Method;
 import java.net.URLEncoder;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 @Aspect
@@ -62,9 +63,9 @@ public class Qbb6ChangeParser {
 				}
 
 				//获取真正拥有qbb6url的那个对象，并替换掉它的那个属性
-				getQbb6UrlOwnerAndResetUrl(clazz, properties, object);
+				getQbb6UrlOwnerAndResetUrl(properties, object, 1);
 				
-				break; //找到一个类名就可以break
+				continue; //可能同一个类会有qbb6Url
 			}
 		} catch (Exception e) {
 			//保证不影响原方法
@@ -72,80 +73,62 @@ public class Qbb6ChangeParser {
 				
 		return object;
 	}
-	
-	private void getQbb6UrlOwnerAndResetUrl(Class<?> clazz, String[] properties, Object object) {
-		
-		//填充第一层对象
-		ObjectClassProperty objectClassProperty = new ObjectClassProperty();
-		objectClassProperty.setObject(object);
-		objectClassProperty.setClazz(clazz);
 
-		//i>length表示config里面的属性序列已经穷尽了，class是String表示已经找到Qbb6url
-		int i = 1;
-		while (objectClassProperty.getClazz() != null && objectClassProperty.getClazz() != String.class && i < properties.length) {
-			objectClassProperty.setProperty(properties[i]);
-			objectClassProperty = parseObject(objectClassProperty);
-			i++;
-		}
+	/**
+	 * 当我们拿到一个对象，还拿到一连串的属性的时候，通过反射可以找到最后的那个属性，并改变它的值
+	 * @param properties 一连串的属性
+	 * @param object 一个对象
+	 * @param level 由于属性可以为容器，用level表示第几层               
+	 */
+	private void getQbb6UrlOwnerAndResetUrl(String[] properties, Object object, int level) throws Exception {
 		
-		if (objectClassProperty.getClazz() != String.class) { //没有找到
+		Method getter = object.getClass().getDeclaredMethod(ReflectUtil.getGetterMethodName(properties[level]));
+		Object value = getter.invoke(object);
+		if (value == null) {
 			return;
 		}
 		
-		String qbb6Url = (String) objectClassProperty.getObject();
-		String url = doTransferQbb6(qbb6Url); //转换后的qbb6url
+		if (level == properties.length - 1) { //到了最后一层,递归出口
+			if (value.getClass() != String.class) { //正常情况下最后是String
+				return;
+			}
+			
+			//得到新的qbb6并设置
+			String newQbb6 = doTransferQbb6((String) value);
+			doSetterNewQbb6(object, properties[level], newQbb6);
+			return;
+		}
 		
-		//拿到上一个对象，调用它的set方法
-		ObjectClassProperty previous = objectClassProperty.getPrevious();
-		doSetterNewQbb6(previous, url);
+		//非出口，去下一层
+		if (value instanceof List) { //如果是List
+			List<Object> list = (List<Object>) value;
+			for (Iterator<Object> iterator = list.iterator(); iterator.hasNext();) {
+				Object element = iterator.next();
+				getQbb6UrlOwnerAndResetUrl(properties, element, level + 1);
+			}
+		}
+		
+		if (value instanceof Map) { //如果是Map
+			Map<Object, Object> map = (Map<Object, Object>) value;
+			for (Map.Entry<Object, Object> entry : map.entrySet()) {
+				Object element = entry.getValue();
+				getQbb6UrlOwnerAndResetUrl(properties, element, level + 1);
+			}
+		}
+		
+		//正常的类
+		getQbb6UrlOwnerAndResetUrl(properties, value, level + 1);
 	}
 	
-	private void doSetterNewQbb6(ObjectClassProperty previous, String url) {
-		Class<?> owner = previous.getClazz();
+	private void doSetterNewQbb6(Object object, String param, String url) {
+		Class<?> owner = object.getClass();
 		try {
-			Method setter = owner.getDeclaredMethod(getSetterMethodName(previous.getProperty()), String.class);
-			setter.invoke(previous.getObject(), url);
+			Method setter = owner.getDeclaredMethod(ReflectUtil.getSetterMethodName(param), String.class);
+			setter.invoke(object, url);
 		} catch (Exception e) {
 		}
 	}
 	
-	/**
-	 * 该方法参数是一个对象，该对象的类，该对象的一个属性名
-	 * 返回那个对象的属性的对象，那个对象的属性的对象的类
-	 * 如果找不到那个属性 不给结果的clazz赋值，就可以退出了 *在该方法里面无需对里面属性判空*
-	 */
-	private ObjectClassProperty parseObject(ObjectClassProperty param) {
-		ObjectClassProperty result = new ObjectClassProperty();
-		try {
-			Class<?> clazz = param.getClazz();
-			Object obj = param.getObject();
-			String property = param.getProperty();
-			
-			//调用传进来对象的getter方法
-			Method getter = clazz.getDeclaredMethod(getGetterMethodName(property));
-			Object resultObject = getter.invoke(obj);
-			
-			result.setPrevious(param);
-			result.setObject(resultObject);
-			result.setClazz(resultObject.getClass());
-		} catch (Exception e) {
-		}
-		
-		return result;
-	}
-	
-	private String getGetterMethodName(String property) {
-		String s = property.substring(0, 1);
-		s = s.toUpperCase();
-		return "get" + s + property.substring(1, property.length());
-	}
-	
-	private String getSetterMethodName(String property) {
-		String s = property.substring(0, 1);
-		s = s.toUpperCase();
-		return "set" + s + property.substring(1, property.length());
-	}
-
 	/**
 	 * 转换Qbb6Url,这里只能针对每一个case做转换
 	 */
