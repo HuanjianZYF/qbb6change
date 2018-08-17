@@ -1,5 +1,5 @@
 com/btime/webser/qbb6change/Qbb6ChangeParser.class
 com/btime/webser/qbb6change/annotation/Qbb6Change.class
-com/btime/webser/qbb6change/entity/ObjectClassProperty.class
+com/btime/webser/qbb6change/ReflectUtil.class
 com/btime/webser/qbb6change/Qbb6ParserConfig.class
 com/btime/webser/qbb6change/Qbb6ParserConstants.class

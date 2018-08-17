@@ -97,11 +97,11 @@ public class Qbb6ChangeParser {
 		}
 		
 		//非出口，去下一层
-		if (object instanceof List) { //如果是List
+		if (object instanceof List) { //如果是List,level不需要加1
 			List<Object> list = (List<Object>) object;
 			for (Iterator<Object> iterator = list.iterator(); iterator.hasNext();) {
 				Object element = iterator.next();
-				getQbb6UrlOwnerAndResetUrl(properties, element, level + 1);
+				getQbb6UrlOwnerAndResetUrl(properties, element, level);
 			}
 		}
 
@@ -109,7 +109,7 @@ public class Qbb6ChangeParser {
 			Map<Object, Object> map = (Map<Object, Object>) object;
 			for (Map.Entry<Object, Object> entry : map.entrySet()) {
 				Object element = entry.getValue();
-				getQbb6UrlOwnerAndResetUrl(properties, element, level + 1);
+				getQbb6UrlOwnerAndResetUrl(properties, element, level);
 			}
 		}
 		

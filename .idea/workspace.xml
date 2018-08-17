@@ -4,7 +4,11 @@
     <list default="true" id="8116091b-6874-4c75-81e9-98ed260f70f3" name="Default" comment="bug fix">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/btime/webser/qbb6change/Qbb6ChangeParser.java" afterPath="$PROJECT_DIR$/src/main/java/com/btime/webser/qbb6change/Qbb6ChangeParser.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/btime/webser/qbb6change/entity/ObjectClassProperty.java" afterPath="" />
+      <change beforePath="$PROJECT_DIR$/target/btime-qbb6change-1.0.0-sources.jar" afterPath="$PROJECT_DIR$/target/btime-qbb6change-1.0.0-sources.jar" />
+      <change beforePath="$PROJECT_DIR$/target/btime-qbb6change-1.0.0.jar" afterPath="$PROJECT_DIR$/target/btime-qbb6change-1.0.0.jar" />
+      <change beforePath="$PROJECT_DIR$/target/classes/com/btime/webser/qbb6change/Qbb6ChangeParser.class" afterPath="$PROJECT_DIR$/target/classes/com/btime/webser/qbb6change/Qbb6ChangeParser.class" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/createdFiles.lst" />
+      <change beforePath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" afterPath="$PROJECT_DIR$/target/maven-status/maven-compiler-plugin/compile/default-compile/inputFiles.lst" />
     </list>
     <ignored path="$PROJECT_DIR$/out/" />
     <ignored path="$PROJECT_DIR$/target/" />
@@ -30,8 +34,8 @@
       <file leaf-file-name="Qbb6ChangeParser.java" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/btime/webser/qbb6change/Qbb6ChangeParser.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-2257">
-              <caret line="15" column="21" lean-forward="true" selection-start-line="15" selection-start-column="21" selection-end-line="15" selection-end-column="21" />
+            <state relative-caret-position="483">
+              <caret line="116" column="45" lean-forward="true" selection-start-line="116" selection-start-column="45" selection-end-line="116" selection-end-column="45" />
               <folding>
                 <element signature="imports" expanded="true" />
               </folding>
@@ -685,7 +689,7 @@
       <updated>1534316565076</updated>
       <workItem from="1534316569062" duration="18062000" />
       <workItem from="1534342706552" duration="103000" />
-      <workItem from="1534381037930" duration="13032000" />
+      <workItem from="1534381037930" duration="16940000" />
     </task>
     <task id="LOCAL-00001" summary="初步实现">
       <created>1534337787118</created>
@@ -708,11 +712,18 @@
       <option name="project" value="LOCAL" />
       <updated>1534341773570</updated>
     </task>
-    <option name="localTasksCounter" value="4" />
+    <task id="LOCAL-00004" summary="bug fix">
+      <created>1534497104578</created>
+      <option name="number" value="00004" />
+      <option name="presentableId" value="LOCAL-00004" />
+      <option name="project" value="LOCAL" />
+      <updated>1534497104578</updated>
+    </task>
+    <option name="localTasksCounter" value="5" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="31197000" />
+    <option name="totallyTimeSpent" value="35105000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="797" extended-state="0" />
@@ -760,7 +771,9 @@
     <option name="LAST_COMMIT_MESSAGE" value="bug fix" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
@@ -902,8 +915,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/btime/webser/qbb6change/Qbb6ChangeParser.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-2257">
-          <caret line="15" column="21" lean-forward="true" selection-start-line="15" selection-start-column="21" selection-end-line="15" selection-end-column="21" />
+        <state relative-caret-position="483">
+          <caret line="116" column="45" lean-forward="true" selection-start-line="116" selection-start-column="45" selection-end-line="116" selection-end-column="45" />
           <folding>
             <element signature="imports" expanded="true" />
           </folding>
