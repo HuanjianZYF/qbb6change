@@ -63,9 +63,23 @@ public class Qbb6ChangeParser {
 				}
 
 				//获取真正拥有qbb6url的那个对象，并替换掉它的那个属性
-				getQbb6UrlOwnerAndResetUrl(properties, object, 1);
+				if (object instanceof List) {
+					List<Object> list = (List<Object>) object;
+					for (Iterator<Object> iterator = list.iterator(); iterator.hasNext();) {
+						Object element = iterator.next();
+						getQbb6UrlOwnerAndResetUrl(properties, element, 1);
+					}
+				} else if (object instanceof Map) {
+					Map<Object, Object> map = (Map<Object, Object>) object;
+					for (Map.Entry<Object, Object> entry : map.entrySet()) {
+						Object element = entry.getValue();
+						getQbb6UrlOwnerAndResetUrl(properties, element, 1);
+					}
+				} else {
+					getQbb6UrlOwnerAndResetUrl(properties, object, 1);
+				}
 				
-				continue; //可能同一个类会有qbb6Url
+				//可能同一个类会有多个qbb6Url,所以不break
 			}
 		} catch (Exception e) {
 			//保证不影响原方法
@@ -95,28 +109,29 @@ public class Qbb6ChangeParser {
 			doSetterNewQbb6(object, properties[level], newQbb6);
 			return;
 		}
+
+		Method getter = object.getClass().getDeclaredMethod(ReflectUtil.getGetterMethodName(properties[level]));
+		Object value = getter.invoke(object);
+
+		if (value == null) {
+			return;
+		}
 		
 		//非出口，去下一层
-		if (object instanceof List) { //如果是List,level不需要加1
-			List<Object> list = (List<Object>) object;
+		if (value instanceof List) { //当前对象，如果是List,level不需要加1
+			List<Object> list = (List<Object>) value;
 			for (Iterator<Object> iterator = list.iterator(); iterator.hasNext();) {
 				Object element = iterator.next();
-				getQbb6UrlOwnerAndResetUrl(properties, element, level);
+				getQbb6UrlOwnerAndResetUrl(properties, element, level + 1);
 			}
 		}
 
-		if (object instanceof Map) { //如果是Map
-			Map<Object, Object> map = (Map<Object, Object>) object;
+		if (value instanceof Map) { //如果是Map
+			Map<Object, Object> map = (Map<Object, Object>) value;
 			for (Map.Entry<Object, Object> entry : map.entrySet()) {
 				Object element = entry.getValue();
 				getQbb6UrlOwnerAndResetUrl(properties, element, level);
 			}
-		}
-		
-		Method getter = object.getClass().getDeclaredMethod(ReflectUtil.getGetterMethodName(properties[level]));
-		Object value = getter.invoke(object);
-		if (value == null) {
-			return;
 		}
 		
 		//正常的类
