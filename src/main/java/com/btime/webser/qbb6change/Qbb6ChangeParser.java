@@ -81,18 +81,15 @@ public class Qbb6ChangeParser {
 	 * @param level 由于属性可以为容器，用level表示第几层               
 	 */
 	private void getQbb6UrlOwnerAndResetUrl(String[] properties, Object object, int level) throws Exception {
-		
-		Method getter = object.getClass().getDeclaredMethod(ReflectUtil.getGetterMethodName(properties[level]));
-		Object value = getter.invoke(object);
-		if (value == null) {
-			return;
-		}
-		
+
 		if (level == properties.length - 1) { //到了最后一层,递归出口
-			if (value.getClass() != String.class) { //正常情况下最后是String
+			Method getter = object.getClass().getDeclaredMethod(ReflectUtil.getGetterMethodName(properties[level]));
+			Object value = getter.invoke(object);
+
+			if (value == null || value.getClass() != String.class) { //正常情况下最后是String
 				return;
 			}
-			
+
 			//得到新的qbb6并设置
 			String newQbb6 = doTransferQbb6((String) value);
 			doSetterNewQbb6(object, properties[level], newQbb6);
@@ -100,20 +97,26 @@ public class Qbb6ChangeParser {
 		}
 		
 		//非出口，去下一层
-		if (value instanceof List) { //如果是List
-			List<Object> list = (List<Object>) value;
+		if (object instanceof List) { //如果是List
+			List<Object> list = (List<Object>) object;
 			for (Iterator<Object> iterator = list.iterator(); iterator.hasNext();) {
 				Object element = iterator.next();
 				getQbb6UrlOwnerAndResetUrl(properties, element, level + 1);
 			}
 		}
-		
-		if (value instanceof Map) { //如果是Map
-			Map<Object, Object> map = (Map<Object, Object>) value;
+
+		if (object instanceof Map) { //如果是Map
+			Map<Object, Object> map = (Map<Object, Object>) object;
 			for (Map.Entry<Object, Object> entry : map.entrySet()) {
 				Object element = entry.getValue();
 				getQbb6UrlOwnerAndResetUrl(properties, element, level + 1);
 			}
+		}
+		
+		Method getter = object.getClass().getDeclaredMethod(ReflectUtil.getGetterMethodName(properties[level]));
+		Object value = getter.invoke(object);
+		if (value == null) {
+			return;
 		}
 		
 		//正常的类
