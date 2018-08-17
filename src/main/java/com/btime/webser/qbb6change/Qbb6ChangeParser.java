@@ -10,6 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 
 import java.lang.reflect.Method;
+import java.net.URLEncoder;
+import java.util.HashMap;
+import java.util.Map;
 
 @Aspect
 @Component
@@ -144,13 +147,60 @@ public class Qbb6ChangeParser {
 	}
 
 	/**
-	 * 转换Qbb6Url
+	 * 转换Qbb6Url,这里只能针对每一个case做转换
 	 */
 	private String doTransferQbb6(String qbb6Url) {
 		String result = qbb6Url;
-
-		result = "************zyyyyyyyyyyffffffffff";
+		
+		if (StringUtils.isEmpty(qbb6Url) || !qbb6Url.startsWith(Qbb6ParserConstants.QBB6_PREFIX)) {
+			return result;
+		}
+		int indexWenhao = qbb6Url.indexOf("?");
+		if (indexWenhao < 0) { //没找到问号
+			return result;
+		}
+		
+		String parameterStr = qbb6Url.substring(indexWenhao + 1, qbb6Url.length());
+		if (StringUtils.isEmpty(parameterStr)) { //没有参数
+			return result;
+		}
+		
+		//组装所有的参数
+		Map<String, String> paramMap = getParamMap(parameterStr);
+		if (!"mall".equals(paramMap.get("module")) || !"area".equals(paramMap.get("sub_module"))) { //不是商品集qbb6
+			return result;
+		}
+		
+		//得到rnUrl
+		StringBuilder rnParams = new StringBuilder();
+		for (Map.Entry<String, String> entry : paramMap.entrySet()) {
+			if (!"module".equals(entry.getKey()) && !"sub_module".equals(entry.getValue())) {
+				rnParams.append("&");
+				rnParams.append(entry.getKey());
+				rnParams.append("=");
+				rnParams.append(entry.getValue());
+			}
+		}
+		String rnUrl =  Qbb6ParserConstants.RN_QBB6_PREFIX + rnParams.toString();
+		
+		result = qbb6Url + "&rn=" + URLEncoder.encode(rnUrl);
 		return result;
+	}
+	
+	private Map<String, String> getParamMap(String parameterStr) {
+		Map<String, String> paramMap = new HashMap<>();
+
+		String[] parameters = parameterStr.split("&"); //获取所有的参数
+		for (String parameter : parameters) {
+			String[] keyAndValue = parameter.split("=");
+			if (keyAndValue.length != 2) {
+				continue;
+			}
+
+			paramMap.put(keyAndValue[0].trim(), keyAndValue[1].trim());
+		}
+		
+		return paramMap;
 	}
 
 }
